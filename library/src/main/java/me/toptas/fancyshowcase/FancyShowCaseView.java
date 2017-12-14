@@ -95,6 +95,7 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
     private int mTitleSize;
     private int mTitleSizeUnit;
     private int mCustomViewRes;
+    private View mCustomViewGroup;
     private int mFocusBorderSize;
     private int mRoundRectRadius;
     private OnViewInflateListener mViewInflateListener;
@@ -138,6 +139,7 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
      * @param focusBorderColor         focus border color of FancyShowCaseView
      * @param focusBorderSize          focus border size of FancyShowCaseView
      * @param customViewRes            custom view layout resource
+     * @param customViewGroup          custom view layout
      * @param viewInflateListener      inflate listener for custom view
      * @param enterAnimation           enter animation for FancyShowCaseView
      * @param exitAnimation            exit animation for FancyShowCaseView
@@ -156,7 +158,7 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
      */
     private FancyShowCaseView(@NonNull Activity activity, View view, String id, String title, Spanned spannedTitle,
                               int titleGravity, int titleStyle, int titleSize, int titleSizeUnit, double focusCircleRadiusFactor,
-                              int backgroundColor, int focusBorderColor, int focusBorderSize, int customViewRes,
+                              int backgroundColor, int focusBorderColor, int focusBorderSize, int customViewRes, View customViewGroup,
                               OnViewInflateListener viewInflateListener, Animation enterAnimation,
                               Animation exitAnimation, AnimationListener animationListener,
                               boolean closeOnTouch, boolean enableTouchOnFocusedView, boolean fitSystemWindows,
@@ -180,6 +182,7 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
         mTitleSizeUnit = titleSizeUnit;
         mRoundRectRadius = roundRectRadius;
         mCustomViewRes = customViewRes;
+        mCustomViewGroup = customViewGroup;
         mViewInflateListener = viewInflateListener;
         mEnterAnimation = enterAnimation;
         mExitAnimation = exitAnimation;
@@ -293,7 +296,11 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
 
 
                     if (mCustomViewRes == 0) {
-                        inflateTitleView();
+                        if(mCustomViewGroup != null){
+                            inflateCustomView(mCustomViewGroup, mViewInflateListener);
+                        }else {
+                            inflateTitleView();
+                        }
                     } else {
                         inflateCustomView(mCustomViewRes, mViewInflateListener);
                     }
@@ -462,6 +469,19 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
         this.addView(view);
         if (viewInflateListener != null) {
             viewInflateListener.onViewInflated(view);
+        }
+    }
+
+    /**
+     * Inflates custom view
+     *
+     * @param layout              layout for custom view
+     * @param viewInflateListener inflate listener for custom view
+     */
+    private void inflateCustomView(View layout, OnViewInflateListener viewInflateListener) {
+        this.addView(layout);
+        if (viewInflateListener != null) {
+            viewInflateListener.onViewInflated(layout);
         }
     }
 
@@ -652,6 +672,7 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
         private int mTitleSizeUnit = -1;
         private int mTitleStyle;
         private int mCustomViewRes;
+        private View mCustomViewGroup;
         private int mRoundRectRadius;
         private OnViewInflateListener mViewInflateListener;
         private Animation mEnterAnimation, mExitAnimation;
@@ -804,6 +825,18 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
         @NonNull
         public Builder customView(@LayoutRes int layoutResource, @Nullable OnViewInflateListener listener) {
             mCustomViewRes = layoutResource;
+            mViewInflateListener = listener;
+            return this;
+        }
+
+        /**
+         * @param layoutResource custom view layout resource
+         * @param listener       inflate listener for custom view
+         * @return Builder
+         */
+        @NonNull
+        public Builder customView(View layoutResource, @Nullable OnViewInflateListener listener) {
+            mCustomViewGroup = layoutResource;
             mViewInflateListener = listener;
             return this;
         }
@@ -967,7 +1000,7 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
         @NonNull
         public FancyShowCaseView build() {
             return new FancyShowCaseView(mActivity, mView, mId, mTitle, mSpannedTitle, mTitleGravity, mTitleStyle, mTitleSize, mTitleSizeUnit,
-                    mFocusCircleRadiusFactor, mBackgroundColor, mFocusBorderColor, mFocusBorderSize, mCustomViewRes, mViewInflateListener,
+                    mFocusCircleRadiusFactor, mBackgroundColor, mFocusBorderColor, mFocusBorderSize, mCustomViewRes, mCustomViewGroup,mViewInflateListener,
                     mEnterAnimation, mExitAnimation, mAnimationListener, mCloseOnTouch, mEnableTouchOnFocusedView, mFitSystemWindows, mFocusShape, mDismissListener, mRoundRectRadius,
                     mFocusPositionX, mFocusPositionY, mFocusCircleRadius, mFocusRectangleWidth, mFocusRectangleHeight, mFocusAnimationEnabled,
                     mFocusAnimationMaxValue, mFocusAnimationStep, mDelay);
