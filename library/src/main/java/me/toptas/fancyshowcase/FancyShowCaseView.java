@@ -210,10 +210,19 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
      */
     private void initializeParameters() {
         mBackgroundColor = mBackgroundColor != 0 ? mBackgroundColor :
-                mActivity.getResources().getColor(R.color.fancy_showcase_view_default_background_color);
+                mActivity.getResources().getColor(
+                    mActivity.getResources().
+                        getIdentifier(
+                            "fancy_showcase_view_default_background_color",
+                            "color", mActivity.getPackageName()
+                        ));
         mTitleGravity = mTitleGravity >= 0 ? mTitleGravity : Gravity.CENTER;
-        mTitleStyle = mTitleStyle != 0 ? mTitleStyle : R.style.FancyShowCaseDefaultTitleStyle;
-
+        mTitleStyle = mTitleStyle != 0 ? mTitleStyle :
+            mActivity.getResources().
+                getIdentifier(
+                    "FancyShowCaseDefaultTitleStyle",
+                    "style", mActivity.getPackageName()
+                );
         DisplayMetrics displayMetrics = new DisplayMetrics();
         mActivity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int deviceWidth = displayMetrics.widthPixels;
@@ -489,7 +498,11 @@ public class FancyShowCaseView extends FrameLayout implements ViewTreeObserver.O
      * Inflates title view layout
      */
     private void inflateTitleView() {
-        inflateCustomView(R.layout.fancy_showcase_view_layout_title, new OnViewInflateListener() {
+        inflateCustomView(mActivity.getResources().
+            getIdentifier(
+                "fancy_showcase_view_layout_title",
+                "layout", mActivity.getPackageName()
+            ), new OnViewInflateListener() {
             @Override
             public void onViewInflated(View view) {
                 TextView textView = (TextView) view.findViewById(R.id.fscv_title);
